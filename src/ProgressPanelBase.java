@@ -6,7 +6,12 @@ public class ProgressPanelBase extends JPanel {
 
     private int angle = 90;
     private JPanel infoPanel = new JPanel();
+    private JPanel infoPanelBottom = new JPanel();
+
     private JLabel infoLabel  = new JLabel("", JLabel.CENTER);
+    private JLabel infoLabelBottom  = new JLabel("", JLabel.CENTER);
+    private Font font = new Font(null, Font.BOLD, 16);
+
 
     protected Double start = 90.0;
     protected int arcRadius = 250;
@@ -19,11 +24,19 @@ public class ProgressPanelBase extends JPanel {
 
         this.setLayout(null);
         this.add(infoPanel);
+        this.add(infoPanelBottom);
 
         infoPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
         infoPanel.setLocation(margin, 0);
         infoPanel.setSize(arcRadius, infoPanelHeight);
         infoPanel.add(infoLabel);
+        infoLabel.setFont(font);
+
+        infoPanelBottom.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+        infoPanelBottom.setLocation(margin, infoPanelHeight + arcRadius);
+        infoPanelBottom.setSize(arcRadius, infoPanelHeight);
+        infoPanelBottom.add(infoLabelBottom);
+        infoLabelBottom.setFont(font);
 
     }
 
@@ -35,8 +48,9 @@ public class ProgressPanelBase extends JPanel {
         return angle;
     }
 
-    public void setInfo(int aAngle, String aCaption){
+    public void setInfo(int aAngle, String aCaption, String aBottomCaption){
         infoLabel.setText(aCaption);
+        infoLabelBottom.setText(aBottomCaption);
         angle = aAngle;
         this.revalidate();
         this.repaint();

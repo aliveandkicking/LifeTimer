@@ -3,12 +3,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.*;
-import java.io.IOException;
 import java.util.Calendar;
 
 public class MainFrom {
 
     final static Calendar birthDate = Calendar.getInstance();
+    final static Integer limitAge = 80;
+    final static Double daysInLimitAge = limitAge * 365.25;
 
     public static void main(String[] args){
 
@@ -23,12 +24,8 @@ public class MainFrom {
         JFrame mainForm = new JFrame("Timer");
 
         try{
-//            mainForm.setIconImage(Toolkit.getDefaultToolkit().getImage(mainForm.getClass().getResource("icon.png")));
-
             ImageIcon icon = new ImageIcon("icon.png");
             mainForm.setIconImage(icon.getImage());
-
-
         }catch (NullPointerException e) {
                 System.err.println("Caught NullPointerException: " + e.getMessage());
         }
@@ -36,7 +33,7 @@ public class MainFrom {
 
         mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        mainForm.setSize(270 * 3, 325);
+        mainForm.setSize(265 * 3, 345);
         mainForm.setMinimumSize(new Dimension(260 * 3, 300));
 
         mainForm.setResizable(false);
@@ -65,14 +62,15 @@ public class MainFrom {
             long milliSecBirth;
             Long difference;
 
-
             Double lifeProgressValue;
             Double yearProgressValue;
             Double timeValue;
 
+            Double daysPassed;
+            Double yearsPassed;
+
             Double percentage;
 
-            final Double daysInYear = 365.25;
             final int secondsInDay = 24*60*60;
 
             @Override
@@ -83,16 +81,18 @@ public class MainFrom {
                 int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
                 Long millisInYear = daysInYear * secondsInDay * (long)1000;
 
-                //life progress
                 milliSecNow = calendar.getTimeInMillis();
                 milliSecBirth = birthDate.getTimeInMillis();
                 difference = milliSecNow - milliSecBirth;
+
+                daysPassed = difference/(secondsInDay * 1000.0);
+                yearsPassed = difference/(daysInYear * secondsInDay * 1000.0);
+
+                //life progress
                 percentage = (difference * 100.0)/(80.0 * millisInYear);
                 lifeProgressValue = percentage * 3.6;
-
                 DecimalFormat formatter = new DecimalFormat("#0.000000000");
-
-                lifeProgress.setInfo(lifeProgressValue.intValue(), formatter.format(percentage) + " %");
+                lifeProgress.setInfo(lifeProgressValue.intValue(), formatter.format(percentage) + " %", "Days Passed: " + " of ");
 
                 //year progress
                 Calendar birthDayCalendar = Calendar.getInstance();
@@ -104,23 +104,26 @@ public class MainFrom {
                 birthDayCalendar.set(Calendar.MILLISECOND, 0);
 
                 difference = calendar.getTimeInMillis() - birthDayCalendar.getTimeInMillis();
-
                 if (difference < 0) {
                     difference = millisInYear - Math.abs(difference);
                 };
                 percentage = (difference * 100.0)/((double) millisInYear);
                 yearProgressValue = percentage * 3.6;
-
                 formatter.applyPattern("#0.0000000");
-
-                yearProgress.setInfo(yearProgressValue.intValue(), formatter.format(percentage) + " %");
+                yearProgress.setInfo(yearProgressValue.intValue(),
+                    formatter.format(percentage) + " %", "Years Passed: " + yearsPassed.intValue() +  " of " + limitAge);
 
                 //day progress
                 timeValue = calendar.get(Calendar.HOUR_OF_DAY) * 60.0 + calendar.get(Calendar.MINUTE);//minutes
                 timeValue = timeValue * 60 + calendar.get(Calendar.SECOND);//seconds
                 timeValue = timeValue * 1000 + calendar.get(Calendar.MILLISECOND);//milliseconds
-                timeValue = (timeValue * 360.0 * 2.0)/((long)1000 * secondsInDay);
-                dayProgress.setInfo(timeValue.intValue(), timeValue.toString());
+
+                percentage = (timeValue * 100.0)/((long)1000 * secondsInDay);
+                timeValue = percentage * 3.6 * 2.0;
+                formatter.applyPattern("#0.0000");
+
+                dayProgress.setInfo(timeValue.intValue(),
+                        formatter.format(percentage) + " %", "Days Passed: " + daysPassed.intValue() + " of " + daysInLimitAge.intValue());
 
             }
         }).start();
