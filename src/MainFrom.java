@@ -9,7 +9,9 @@ public class MainFrom {
 
     final static Calendar birthDate = Calendar.getInstance();
     final static Integer limitAge = 80;
-    final static Double daysInLimitAge = limitAge * 365.25;
+    final static Double approxDaysInYear = 365.25;
+    final static Double approxDaysInMonth = 30.4375;
+    final static Double daysInLimitAge = limitAge * approxDaysInYear;
 
     public static void main(String[] args){
 
@@ -21,7 +23,28 @@ public class MainFrom {
         birthDate.set(Calendar.SECOND, 0);
         birthDate.set(Calendar.MILLISECOND, 1);
 
-        JFrame mainForm = new JFrame("Timer");
+        final JFrame mainForm = new JFrame("Timer");
+        JButton button = new JButton("");
+        JPanel mainPanel = new JPanel(null);
+        final JPanel additPanel = new JPanel(new GridLayout(5, 1));
+        additPanel.setSize(200, mainPanel.getHeight());
+        additPanel.setVisible(false);
+
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (additPanel.isVisible()) {
+
+                    mainForm.setSize(mainForm.getWidth() - additPanel.getWidth(), mainForm.getHeight());
+                    additPanel.setVisible(false);
+
+                } else {
+                    mainForm.setSize(mainForm.getWidth() + additPanel.getWidth(), mainForm.getHeight());
+                    additPanel.setVisible(true);
+                }
+
+            }
+
+        });
 
         try{
             ImageIcon icon = new ImageIcon("icon.png");
@@ -30,10 +53,12 @@ public class MainFrom {
                 System.err.println("Caught NullPointerException: " + e.getMessage());
         }
 
-
         mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        mainForm.setSize(265 * 3, 345);
+        mainPanel.setSize(265 * 3, 345);
+        mainPanel.setLayout(new GridLayout(1,4));
+
+        mainForm.setSize(mainPanel.getWidth() + 30, mainPanel.getHeight());
         mainForm.setMinimumSize(new Dimension(260 * 3, 300));
 
         mainForm.setResizable(false);
@@ -41,9 +66,7 @@ public class MainFrom {
         Double xPos = (Toolkit.getDefaultToolkit().getScreenSize().getHeight() - mainForm.getHeight())/2.0;
         Double yPos = (Toolkit.getDefaultToolkit().getScreenSize().getWidth() - mainForm.getWidth())/2.0;
         mainForm.setLocation(xPos.intValue(), yPos.intValue());
-        mainForm.setVisible(true);
-
-        mainForm.setLayout(new GridLayout(1,3));
+        mainForm.setLayout(null);
 
         Double yearProgressAngle = ((-1*
                 (birthDate.get(Calendar.DAY_OF_YEAR) * 360.0) / Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_YEAR)*360.0)/365.25) + 86;
@@ -52,9 +75,18 @@ public class MainFrom {
         final ProgressPanelYear yearProgress = new ProgressPanelYear(yearProgressAngle);
         final ProgressPanelDay dayProgress = new ProgressPanelDay();
 
-        mainForm.add(dayProgress);
-        mainForm.add(yearProgress);
-        mainForm.add(lifeProgress);
+        mainPanel.add(dayProgress);
+        mainPanel.add(yearProgress);
+        mainPanel.add(lifeProgress);
+
+        mainForm.add(mainPanel);
+        mainPanel.setLocation(0, 0);
+        mainForm.add(additPanel);
+        mainForm.add(button);
+        button.setSize(30, mainPanel.getHeight());
+        button.setLocation(mainPanel.getWidth() + 1, 0);
+
+        mainForm.setVisible(true);
 
         new Timer(100, new ActionListener() {
 
@@ -68,6 +100,8 @@ public class MainFrom {
 
             Double daysPassed;
             Double yearsPassed;
+            Double monthPassedInYear;
+            Double daysPassedInMonth;
 
             Double percentage;
 
@@ -87,12 +121,15 @@ public class MainFrom {
 
                 daysPassed = difference/(secondsInDay * 1000.0);
                 yearsPassed = difference/(daysInYear * secondsInDay * 1000.0);
+                monthPassedInYear = (daysPassed - (yearsPassed.intValue() * approxDaysInYear))/approxDaysInMonth;
+                daysPassedInMonth =  1.0 + daysPassed - (yearsPassed.intValue() * approxDaysInYear) - (monthPassedInYear.intValue() * approxDaysInMonth);
 
                 //life progress
                 percentage = (difference * 100.0)/(80.0 * millisInYear);
                 lifeProgressValue = percentage * 3.6;
                 DecimalFormat formatter = new DecimalFormat("#0.000000000");
-                lifeProgress.setInfo(lifeProgressValue.intValue(), formatter.format(percentage) + " %", "Days Passed: " + " of ");
+                lifeProgress.setInfo(lifeProgressValue.intValue(), formatter.format(percentage) +" %",
+                        "Age: " + yearsPassed.intValue() + " years " + monthPassedInYear.intValue() + " months " + daysPassedInMonth.intValue() + " days");
 
                 //year progress
                 Calendar birthDayCalendar = Calendar.getInstance();
