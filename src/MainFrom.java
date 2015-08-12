@@ -26,20 +26,20 @@ public class MainFrom {
         final JFrame mainForm = new JFrame("Timer");
         JButton button = new JButton("");
         JPanel mainPanel = new JPanel(null);
-        final JPanel additPanel = new JPanel(new GridLayout(5, 1));
-        additPanel.setSize(200, mainPanel.getHeight());
-        additPanel.setVisible(false);
+        final AdditionalInfoPanel additionalInfoPanel = new AdditionalInfoPanel();
+        additionalInfoPanel.setSize(200, mainPanel.getHeight());
+        additionalInfoPanel.setVisible(false);
 
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (additPanel.isVisible()) {
+                if (additionalInfoPanel.isVisible()) {
 
-                    mainForm.setSize(mainForm.getWidth() - additPanel.getWidth(), mainForm.getHeight());
-                    additPanel.setVisible(false);
+                    mainForm.setSize(mainForm.getWidth() - additionalInfoPanel.getWidth(), mainForm.getHeight());
+                    additionalInfoPanel.setVisible(false);
 
                 } else {
-                    mainForm.setSize(mainForm.getWidth() + additPanel.getWidth(), mainForm.getHeight());
-                    additPanel.setVisible(true);
+                    mainForm.setSize(mainForm.getWidth() + additionalInfoPanel.getWidth(), mainForm.getHeight());
+                    additionalInfoPanel.setVisible(true);
                 }
 
             }
@@ -81,10 +81,14 @@ public class MainFrom {
 
         mainForm.add(mainPanel);
         mainPanel.setLocation(0, 0);
-        mainForm.add(additPanel);
+
         mainForm.add(button);
         button.setSize(30, mainPanel.getHeight());
         button.setLocation(mainPanel.getWidth() + 1, 0);
+
+        mainForm.add(additionalInfoPanel);
+        additionalInfoPanel.setSize(350, mainPanel.getHeight());
+        additionalInfoPanel.setLocation(button.getLocation().x + button.getWidth(), 0);
 
         mainForm.setVisible(true);
 
@@ -100,6 +104,13 @@ public class MainFrom {
 
             Double daysPassed;
             Double yearsPassed;
+
+            Double secondsPassed;
+            Double minutesPassed;
+            Double hoursPassed;
+            Double weeksPassed;
+            Double monthsPassed;
+
             Double monthPassedInYear;
             Double daysPassedInMonth;
 
@@ -119,8 +130,14 @@ public class MainFrom {
                 milliSecBirth = birthDate.getTimeInMillis();
                 difference = milliSecNow - milliSecBirth;
 
-                daysPassed = difference/(secondsInDay * 1000.0);
-                yearsPassed = difference/(daysInYear * secondsInDay * 1000.0);
+                secondsPassed = difference/1000.0;
+                minutesPassed = secondsPassed/60.0;
+                hoursPassed = minutesPassed/60.0;
+                daysPassed = hoursPassed/24.0;
+                weeksPassed = daysPassed/7.0;
+                monthsPassed = daysPassed/approxDaysInMonth;
+                yearsPassed =  daysPassed/daysInYear;
+
                 monthPassedInYear = (daysPassed - (yearsPassed.intValue() * approxDaysInYear))/approxDaysInMonth;
                 daysPassedInMonth =  1.0 + daysPassed - (yearsPassed.intValue() * approxDaysInYear) - (monthPassedInYear.intValue() * approxDaysInMonth);
 
@@ -162,6 +179,13 @@ public class MainFrom {
                 dayProgress.setInfo(timeValue.intValue(),
                         formatter.format(percentage) + " %", "Days Passed: " + daysPassed.intValue() + " of " + daysInLimitAge.intValue());
 
+                //additional info
+                additionalInfoPanel.setSeconds(secondsPassed.intValue())
+                                   .setMinutes(minutesPassed.intValue())
+                                   .setHours(hoursPassed.intValue())
+                                   .setWeeks(weeksPassed.intValue())
+                                   .setMonths(monthsPassed.intValue()).
+                                    RefreshData();
             }
         }).start();
 
