@@ -1,83 +1,87 @@
 import javax.swing.*;
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Formatter;
+import java.util.Locale;
 
 
 public class AdditionalInfoPanel extends JPanel {
 
+    final private Font labelFont = new Font(null, Font.BOLD, 16);
+
     private class InfoLabel extends JLabel{
 
-        private Integer converter;
-        private String prefix;
-        private String suffix;
+        private NumberFormat nf = NumberFormat.getNumberInstance(Locale.FRANCE);
+        private DecimalFormat formatter = (DecimalFormat)nf;
+        private String suffix = "";
 
-        public InfoLabel(String aPrefix){
-            prefix = aPrefix;
-            setFont(new Font(null, Font.BOLD, 16));
+        public InfoLabel(){
+            formatter.applyPattern("###,###,###,###");
+            setFont(labelFont);
         }
 
-        public void setText(int value) {
-            converter = value;
-            super.setText(prefix + converter.toString());
+        public void setText(long value) {
+            super.setText(" : " + formatter.format(value) + suffix);
         }
 
-        public void setSuffix(int value) {
-            converter = value;
-            this.suffix = " of " + converter.toString();
+        public void setSuffix(long value) {
+            this.suffix = " of " + formatter.format(value);
         }
     }
 
-    private InfoLabel seconds = new InfoLabel("Seconds passed: ");
-    private InfoLabel minutes = new InfoLabel("Minutes passed: ");
-    private InfoLabel hours = new InfoLabel("Hours passed: ");
-    private InfoLabel weeks = new InfoLabel("Weeks passed: ");
-    private InfoLabel months = new InfoLabel("Months passed: ");
+    private InfoLabel seconds = new InfoLabel();
+    private InfoLabel minutes = new InfoLabel();
+    private InfoLabel hours = new InfoLabel();
+    private InfoLabel weeks = new InfoLabel();
+    private InfoLabel months = new InfoLabel();
 
-    public AdditionalInfoPanel setMonths(int months) {
+    public AdditionalInfoPanel setMonths(long months) {
         this.months.setText(months);
         return this;
     }
 
-    public AdditionalInfoPanel setWeeks(int weeks) {
+    public AdditionalInfoPanel setWeeks(long weeks) {
         this.weeks.setText(weeks);
         return this;
     }
 
-    public AdditionalInfoPanel setHours(int hours) {
+    public AdditionalInfoPanel setHours(long hours) {
         this.hours.setText(hours);
         return this;
     }
 
-    public AdditionalInfoPanel setMinutes(int minutes) {
+    public AdditionalInfoPanel setMinutes(long minutes) {
         this.minutes.setText(minutes);
         return this;
     }
 
-    public AdditionalInfoPanel setSeconds(int seconds) {
+    public AdditionalInfoPanel setSeconds(long seconds) {
         this.seconds.setText(seconds);
         return this;
     }
 
-    public AdditionalInfoPanel setMaxMonths(int months) {
+    public AdditionalInfoPanel setMaxMonths(long months) {
         this.months.setSuffix(months);
         return this;
     }
 
-    public AdditionalInfoPanel setMaxWeeks(int weeks) {
+    public AdditionalInfoPanel setMaxWeeks(long weeks) {
         this.weeks.setSuffix(weeks);
         return this;
     }
 
-    public AdditionalInfoPanel setMaxHours(int hours) {
+    public AdditionalInfoPanel setMaxHours(long hours) {
         this.hours.setSuffix(hours);
         return this;
     }
 
-    public AdditionalInfoPanel setMaxMinutes(int minutes) {
+    public AdditionalInfoPanel setMaxMinutes(long minutes) {
         this.minutes.setSuffix(minutes);
         return this;
     }
 
-    public AdditionalInfoPanel setMaxSeconds(int seconds) {
+    public AdditionalInfoPanel setMaxSeconds(long seconds) {
         this.seconds.setSuffix(seconds);
         return this;
     }
@@ -89,12 +93,37 @@ public class AdditionalInfoPanel extends JPanel {
 
     public AdditionalInfoPanel() {
 
-        this.setLayout(new GridLayout(5, 1));
-        this.add(seconds);
-        this.add(minutes);
-        this.add(hours);
-        this.add(weeks);
-        this.add(months);
+        class InternalLabel extends JLabel{
+            InternalLabel(String text, Font labelFont) {
+                super(text);
+                setFont(labelFont);
+            }
+        }
+
+        JPanel leftPanel = new JPanel(new GridLayout(5, 1));
+        JPanel rightPanel = new JPanel(new GridLayout(5, 1));
+
+        this.setLayout(null);
+
+        this.add(leftPanel);
+        leftPanel.setSize(130, 220);
+        leftPanel.setLocation(15, 0);
+
+        this.add(rightPanel);
+        rightPanel.setSize(255, 220);
+        rightPanel.setLocation(145, 0);
+
+        leftPanel.add(new InternalLabel("Seconds passed", labelFont));
+        leftPanel.add(new InternalLabel("Minutes passed", labelFont));
+        leftPanel.add(new InternalLabel("Hours passed", labelFont));
+        leftPanel.add(new InternalLabel("Weeks passed", labelFont));
+        leftPanel.add(new InternalLabel("Months passed", labelFont));
+
+        rightPanel.add(seconds);
+        rightPanel.add(minutes);
+        rightPanel.add(hours);
+        rightPanel.add(weeks);
+        rightPanel.add(months);
 
     }
 }

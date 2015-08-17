@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.*;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class MainFrom {
 
@@ -12,6 +13,11 @@ public class MainFrom {
     final static Double approxDaysInYear = 365.25;
     final static Double approxDaysInMonth = 30.4375;
     final static Double daysInLimitAge = limitAge * approxDaysInYear;
+
+    private static NumberFormat nf = NumberFormat.getNumberInstance(Locale.FRANCE);
+    final static DecimalFormat formatter = (DecimalFormat)nf;
+
+    final static DecimalFormat percentageFormatter = new DecimalFormat();
 
     public static void main(String[] args){
 
@@ -23,11 +29,24 @@ public class MainFrom {
         birthDate.set(Calendar.SECOND, 0);
         birthDate.set(Calendar.MILLISECOND, 1);
 
+        formatter.applyPattern("###,###,###,###");
+
         final JFrame mainForm = new JFrame("Timer");
         JButton button = new JButton("");
         JPanel mainPanel = new JPanel(null);
         final AdditionalInfoPanel additionalInfoPanel = new AdditionalInfoPanel();
-        additionalInfoPanel.setSize(200, mainPanel.getHeight());
+
+        Double localConverter = daysInLimitAge * 24.0 * 60.0 * 60.0;
+        additionalInfoPanel.setMaxSeconds(Math.round(localConverter.doubleValue()));
+        localConverter = daysInLimitAge * 24.0 * 60.0;
+        additionalInfoPanel.setMaxMinutes(localConverter.intValue());
+        localConverter = daysInLimitAge * 24.0;
+        additionalInfoPanel.setMaxHours(localConverter.intValue());
+        localConverter = daysInLimitAge/7.0;
+        additionalInfoPanel.setMaxWeeks(localConverter.intValue());
+        localConverter = limitAge * 12.0;
+        additionalInfoPanel.setMaxMonths(localConverter.intValue());
+
         additionalInfoPanel.setVisible(false);
 
         button.addActionListener(new ActionListener() {
@@ -87,7 +106,7 @@ public class MainFrom {
         button.setLocation(mainPanel.getWidth() + 1, 0);
 
         mainForm.add(additionalInfoPanel);
-        additionalInfoPanel.setSize(350, mainPanel.getHeight());
+        additionalInfoPanel.setSize(400, mainPanel.getHeight());
         additionalInfoPanel.setLocation(button.getLocation().x + button.getWidth(), 0);
 
         mainForm.setVisible(true);
@@ -144,8 +163,8 @@ public class MainFrom {
                 //life progress
                 percentage = (difference * 100.0)/(80.0 * millisInYear);
                 lifeProgressValue = percentage * 3.6;
-                DecimalFormat formatter = new DecimalFormat("#0.000000000");
-                lifeProgress.setInfo(lifeProgressValue.intValue(), formatter.format(percentage) +" %",
+                percentageFormatter.applyPattern("#0.000000000");
+                lifeProgress.setInfo(lifeProgressValue.intValue(), percentageFormatter.format(percentage) +" %",
                         "Age: " + yearsPassed.intValue() + " years " + monthPassedInYear.intValue() + " months " + daysPassedInMonth.intValue() + " days");
 
                 //year progress
@@ -163,9 +182,9 @@ public class MainFrom {
                 };
                 percentage = (difference * 100.0)/((double) millisInYear);
                 yearProgressValue = percentage * 3.6;
-                formatter.applyPattern("#0.0000000");
+                percentageFormatter.applyPattern("#0.0000000");
                 yearProgress.setInfo(yearProgressValue.intValue(),
-                    formatter.format(percentage) + " %", "Years Passed: " + yearsPassed.intValue() +  " of " + limitAge);
+                        percentageFormatter.format(percentage) + " %", "Years Passed: " + yearsPassed.intValue() +  " of " + limitAge);
 
                 //day progress
                 timeValue = calendar.get(Calendar.HOUR_OF_DAY) * 60.0 + calendar.get(Calendar.MINUTE);//minutes
@@ -174,10 +193,10 @@ public class MainFrom {
 
                 percentage = (timeValue * 100.0)/((long)1000 * secondsInDay);
                 timeValue = percentage * 3.6 * 2.0;
-                formatter.applyPattern("#0.0000");
 
-                dayProgress.setInfo(timeValue.intValue(),
-                        formatter.format(percentage) + " %", "Days Passed: " + daysPassed.intValue() + " of " + daysInLimitAge.intValue());
+                percentageFormatter.applyPattern("#0.0000");
+                dayProgress.setInfo(timeValue.intValue(), percentageFormatter.format(percentage) + " %",
+                        "Days Passed: " + formatter.format(daysPassed.intValue()) + " of " + formatter.format(daysInLimitAge.intValue()));
 
                 //additional info
                 additionalInfoPanel.setSeconds(secondsPassed.intValue())
