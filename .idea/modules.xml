@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../CustomSql/SharedUnits/SharedUnits.iml" filepath="$PROJECT_DIR$/../CustomSql/SharedUnits/SharedUnits.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SharedUnits.iml" filepath="$PROJECT_DIR$/../SharedUnits.iml" />
       <module fileurl="file://$PROJECT_DIR$/Timer.iml" filepath="$PROJECT_DIR$/Timer.iml" />
     </modules>
   </component>
